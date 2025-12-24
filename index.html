@@ -200,8 +200,68 @@
 
     .hidden { display: none; }
 
+    /* 📱 AJUSTES MOBILE */
+   @media (max-width: 480px) {
+   
+       .player {
+           max-width: 300px;
+           padding: 16px;
+           border-width: 5px;
+       }
+   
+       .song-title {
+           font-size: 12px;
+           letter-spacing: 2px;
+           margin-bottom: 8px;
+           line-height: 1.4;
+       }
+   
+       .screen {
+           padding: 8px;
+           margin-bottom: 10px;
+       }
+   
+       .screen img {
+           border-radius: 12px;
+       }
+   
+       .progress-container {
+           height: 5px;
+           margin-bottom: 12px;
+       }
+   
+       .controls {
+           padding: 5px;
+           gap: 5px;
+       }
+   
+       .control-btn {
+           padding: 10px 0;
+       }
+   
+       .control-btn svg {
+           width: 22px;
+           height: 22px;
+       }
+   
+       .lyrics {
+           padding: 8px;
+           border-radius: 12px;
+       }
+   
+       .lyrics-scroll {
+           height: 100px; /* 👈 CLAVE */
+       }
+   
+       #lyricsText {
+           font-size: 12px;
+           line-height: 1.45;
+       }
+   }
+  
 </style>
 </head>
+   
 <body>
 
 <div class="aesthetic-bg" id="bg"></div>
@@ -751,3 +811,4 @@ setInterval(createHeart, 180);
 
 </body>
 </html>
+
