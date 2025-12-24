@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Songs 4 My Love</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+    * { box-sizing: border-box; }
+
+    body {
+        margin: 0;
+        font-family: 'Poppins', sans-serif;
+        background: linear-gradient(180deg,#ffd6e8,#fff0f7);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        overflow: hidden;
+    }
+
+    /* 🌸 FONDO PARTÍCULAS */
+    .aesthetic-bg {
+        position: fixed;
+        inset: 0;
+        z-index: -1;
+        overflow: hidden;
+    }
+
+    /* 💕 corazones SVG */
+    .heart {
+        position: absolute;
+        bottom: -10%;
+        width: 18px;
+        opacity: 0.25;
+        animation: floatUp linear forwards;
+    }
+
+    @keyframes floatUp {
+        to {
+            transform: translateY(-120vh) scale(1.4);
+            opacity: 0;
+        }
+    }
+
+    /* 🎵 PLAYER */
+    .player {
+        width: 100%;
+        max-width: 340px;
+        background: #fff3e0cc;
+        border: 6px solid #f7c6c7;
+        border-radius: 30px;
+        padding: 20px;
+        backdrop-filter: blur(6px);
+        box-shadow: 10px 11px 28px 0px rgba(53,0,105,0.65);
+        -webkit-box-shadow: 10px 11px 28px 0px rgba(53,0,105,0.65);
+        -moz-box-shadow: 10px 11px 28px 0px rgba(53,0,105,0.65);
+    }
+
+    .song-title {
+        text-align: center;
+        font-size: 14px;
+        letter-spacing: 3px;
+        margin-bottom: 10px;
+        font-weight: bold;
+    }
+
+    /* pantalla */
+    .screen {
+        background: #e8dcff;
+        border-radius: 20px;
+        padding: 10px;
+        margin-bottom: 12px;
+    }
+
+    .screen img {
+        width: 100%;
+        border-radius: 15px;
+    }
+
+    /* ⏱ barra */
+    .progress-container {
+        width: 100%;
+        height: 6px;
+        background: #f3b3c4;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-bottom: 14px;
+    }
+
+    .progress {
+        height: 100%;
+        width: 0%;
+        background: #ff1f96;
+        border-radius: 5px;
+    }
+
+    /* 🎛 CONTROLES */
+    .controls {
+        display: flex;
+        background: #f7c6c7;
+        border-radius: 30px;
+        padding: 6px;
+        gap: 6px;
+        margin-bottom: 15px;
+    }
+
+    .control-btn {
+        flex: 1;
+        background: transparent;
+        border: none;
+        border-radius: 22px;
+        padding: 14px 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        color: #ffffff;
+        transition: background .25s, transform .15s;
+    }
+
+    .control-btn:hover {
+        background: rgba(255,31,150,.12);
+    }
+
+    .control-btn:active {
+        background: rgba(255,31,150,.18);
+        transform: scale(.95);
+    }
+
+    .control-btn svg {
+        width: 35px;
+        height: 35px;
+    }
+
+    /* 🎶 LETRAS */
+    .lyrics {
+        overflow: hidden;          
+        position: relative;
+        background: rgba(255, 255, 255, 0.75);
+        border-radius: 18px;
+        padding: 14px;
+        height: 150px;
+        overflow-y: auto;
+        box-shadow: 0 10px 25px rgba(255, 31, 150, 0.15);
+        backdrop-filter: blur(6px);
+        border: 1px solid rgba(255, 31, 150, 0.25);
+        animation: fadeLyrics 0.6s ease;
+    }
+
+    .lyrics-scroll {
+        height: 210px;
+        overflow-y: auto;
+        padding-right: 6px;
+    }
+
+
+    .lyrics h2 {
+        font-size: 12px;
+        letter-spacing: 4px;
+        color: #ff1f96;
+        text-transform: uppercase;
+        margin-bottom: 10px;
+    }
+
+    #lyricsText {
+        font-size: 15px;
+        white-space: pre-line;
+    }
+
+    .lyrics-scroll::-webkit-scrollbar {
+        width: 5px;
+    }
+
+    .lyrics-scroll::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    .lyrics-scroll::-webkit-scrollbar-thumb {
+        background: rgba(255, 31, 150, 0.35);
+        border-radius: 10px;
+    }
+
+    .lyrics-scroll::-webkit-scrollbar-thumb:hover {
+        background: rgba(255, 31, 150, 0.6);
+    }
+
+    @keyframes fadeLyrics {
+        from {
+            opacity: 0;
+            transform: translateY(6px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .hidden { display: none; }
+
+    /* 📱 AJUSTES MOBILE */
+    /* @media (max-width: 480px) {
+
+        .player {
+            max-width: 300px;
+            padding: 16px;
+            border-width: 5px;
+        }
+
+        .song-title {
+            font-size: 12px;
+            letter-spacing: 2px;
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+
+        .screen {
+            padding: 8px;
+            margin-bottom: 10px;
+        }
+
+        .screen img {
+            border-radius: 12px;
+        }
+
+        .progress-container {
+            height: 5px;
+            margin-bottom: 12px;
+        }
+
+        .controls {
+            padding: 5px;
+            gap: 5px;
+        }
+
+        .control-btn {
+            padding: 10px 0;
+        }
+
+        .control-btn svg {
+            width: 22px;
+            height: 22px;
+        }
+
+        .lyrics {
+            padding: 8px;
+            border-radius: 12px;
+        }
+
+        .lyrics-scroll {
+            height: 100px;
+        }
+
+        #lyricsText {
+            font-size: 12px;
+            line-height: 1.45;
+        }
+    }*/
+    /* 📱 MOBILE COMPACT MODE */
+    @media (max-width: 480px) {
+
+        body {
+            padding: 10px;
+        }
+
+        .player {
+            max-width: 280px;
+            padding: 14px;
+            border-width: 4px;
+            border-radius: 24px;
+        }
+
+        .song-title {
+            font-size: 11px;
+            letter-spacing: 1.5px;
+            line-height: 1.3;
+            margin-bottom: 6px;
+        }
+
+        .screen {
+            padding: 6px;
+            margin-bottom: 8px;
+        }
+
+        .screen img {
+            border-radius: 10px;
+        }
+
+        /* ⏱ barra */
+        .progress-container {
+            height: 4px;
+            margin-bottom: 10px;
+        }
+
+        /* 🎛 controles */
+        .controls {
+            padding: 4px;
+            gap: 4px;
+            border-radius: 24px;
+        }
+
+        .control-btn {
+            padding: 8px 0;
+            border-radius: 18px;
+        }
+
+        .control-btn svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* 🎶 letras */
+        .lyrics {
+            padding: 8px;
+            border-radius: 12px;
+        }
+
+        .lyrics h2 {
+            font-size: 12px;
+            margin-bottom: 4px;
+        }
+
+        .lyrics-scroll {
+            height: 85px; /* 👈 MUY IMPORTANTE */
+        }
+
+        #lyricsText {
+            font-size: 11px;
+            line-height: 1.4;
+        }
+    }
+
+
+</style>
+</head>
+<body>
+
+<div class="aesthetic-bg" id="bg"></div>
+
+<div class="player">
+    <div class="song-title" id="songTitle">Cargando...</div>
+
+    <section class="screen">
+        <img src="img/pantalla.jpg">
+    </section>
+
+    <div class="progress-container" id="progressContainer">
+        <div class="progress" id="progress"></div>
+    </div>
+
+    <div class="controls">
+        <button class="control-btn" id="prevBtn">
+            <svg viewBox="0 0 32 32">
+                <rect x="4" y="9" width="5" height="14" stroke="currentColor" fill="none" stroke-width="2"/>
+                <polygon points="18,23 18,9 9,16" stroke="currentColor" fill="none" stroke-width="2"/>
+                <polygon points="27,23 27,9 18,16" stroke="currentColor" fill="none" stroke-width="2"/>
+            </svg>
+        </button>
+
+        <button class="control-btn" id="playBtn">
+            <svg class="play" viewBox="0 0 32 32">
+                <polygon points="12,9 12,23 21,16" stroke="currentColor" fill="none" stroke-width="2"/>
+            </svg>
+            <svg class="pause hidden" viewBox="0 0 32 32">
+                <rect x="9" y="9" width="5" height="14" stroke="currentColor" fill="none" stroke-width="2"/>
+                <rect x="18" y="9" width="5" height="14" stroke="currentColor" fill="none" stroke-width="2"/>
+            </svg>
+        </button>
+
+        <button class="control-btn" id="nextBtn">
+            <svg viewBox="0 0 32 32">
+                <rect x="23" y="9" width="5" height="14" stroke="currentColor" fill="none" stroke-width="2"/>
+                <polygon points="14,9 14,23 23,16" stroke="currentColor" fill="none" stroke-width="2"/>
+                <polygon points="5,9 5,23 14,16" stroke="currentColor" fill="none" stroke-width="2"/>
+            </svg>
+        </button>
+    </div>
+
+    <audio id="audio"></audio>
+
+    <!-- <div class="lyrics">
+        <h2>Letra</h2>
+        <p id="lyricsText"></p>
+    </div> -->
+
+    <div class="lyrics-scroll">
+        <p id="lyricsText"></p>
+    </div>
+
+</div>
+
+<script>
+const playlist = [
+    {
+        artist: "Bad Omens",
+        song: "Just Pretend",
+        src: "audio/1.mp3",
+        lyrics: `I'm not afraid
+Of the war you've come to wage against my sins
+I'm not okay
+But I can try my best to just pretend
+So will you wait me out
+Or will you drown me out?
+So will you wait me out
+Or will you drown me out?
+(I have to let you go)
+I can wait for you at the bottom
+I can stay away if you want me to
+I can wait for years if I gotta
+Heaven knows I ain't getting over you
+I know the pain
+That you hide behind the smile on your face
+And not a day
+Goes by where I don't think I feel the same
+So will you wait me out
+Or will you drown me out?
+So will you wait me out
+Or will you drown me out?
+I can wait for you at the bottom
+I can stay away if you want me to
+I can wait for years if I gotta
+Heaven knows I ain't getting over you
+We'll try again
+When we're not so different
+We will make amends
+'Til then I'll just pretend
+Weigh down on me, stay 'til morning
+Way down, would you say I'm worthy?
+Weigh down on me, stay 'til morning
+Way down, would you say I'm worthy?
+I can wait for you at the bottom
+I can stay away if you want me to
+I can wait for years if I gotta
+Heaven knows I ain't getting over you
+We'll try again
+When we're not so different
+We will make amends
+'Til then I'll just pretend
+Weigh down on me, stay 'til morning
+Way down, would you say I'm worthy?
+Weigh down on me, stay 'til morning
+Way down, would you say I'm worthy?`
+    },
+        {
+        artist: "Maneskin",
+        song: "Own My Mind",
+        src: "audio/2.mp3",
+        lyrics: `Well, I don't know your secrets, I'm no visionary
+Yeah, I don't know your story, but I like what I see
+So tell me what you've been missing
+I'll do anything to get you ticking
+And you might be the answer to the sinner in me
+Oh, it's automatic
+You know I just gotta have it
+I'll make your body a habit
+You know there's some kind of magic, uh-huh
+Do you wanna, do you wanna own my mind, own my mind?
+Do you wanna, do you wanna all the time, all the time?
+Do you wanna know what the good, good, bad things all feel like?
+Yeah, do you wanna, do you wanna own my mind, own my mind?
+Own my mind, own my mind?
+Own my mind, own my mind?
+Do you wanna know what the good, good, bad things all feel like?
+Do you wanna, do you wanna own my mind, own my mind?
+In my civilization, you're the king and the queen
+I'm praying at your altar, if you know what I mean
+Yeah, everything I've been missing
+You've been serving up in your kitchen
+No, I'm not even superstitious
+But I'm feeling you're something vicious, yeah
+It's automatic
+You know I just gotta have it
+I'll make your body a habit
+You know there's some kind of magic, uh-huh
+Do you wanna, do you wanna own my mind, own my mind?
+Do you wanna, do you wanna all the time, all the time?
+Do you wanna know what the good, good, bad things all feel like?
+Yeah, do you wanna, do you wanna own my mind, own my mind?
+Own my mind, own my mind?
+Own my mind, own my mind?
+Do you wanna know what the good, good, bad things all feel like?
+Do you wanna, do you wanna own my mind, own my mind?
+Do you want a long night?
+Do you wanna be mine?
+Do you wanna go once, go twice?
+Girl, do you want a long night?
+Do you wanna be mine?
+Do you wanna go once, go twice, girl?
+Do you wanna, do you wanna own my mind, own my mind?
+Do you wanna, do you wanna own my mind, own my mind?
+Do you wanna know what the good, good, bad things all feel like?
+Do you wanna, do you wanna own my mind, own my mind?`
+    },
+    {
+        artist: "Harry Styles",
+        song: "Sunflower Vol. 6",
+        src: "audio/3.mp3",
+        lyrics: `Sunflower
+Sunflower
+My eyes, want you more than a melody
+Let me inside
+Wish I could get to know you
+Sunflowers
+Sometimes
+Keep it sweet in your memory
+I was just tongue-tied
+I don't wanna make you feel bad
+But I've been trying hard not to talk to you
+Sunflower (Sunflower, sunflower)
+I couldn't want you any more
+Kiss in the kitchen like it's a dance floor
+I couldn't want you any more tonight
+(Tonight, tonight, tonight)
+Wondering headshake
+Tired eyes are the death of me
+Mouthful of toothpaste
+Before I got to know you
+I've got your face
+Hung up high in the gallery
+I love this shade
+(Sunflower, sunflower)
+Your flowers just died
+Plant new seeds in the melody
+Let me inside, I wanna get to know you
+I don't wanna make you feel bad
+But I've been trying hard not to act a fool
+Sunflower (Sunflower, sunflower)
+I couldn't want you any more
+Kiss in the kitchen like it's a dance floor
+I couldn't want you any more tonight
+(Tonight, tonight, tonight)
+I couldn't want you any more
+Kids in the kitchen listen to dance hall
+I couldn't want you any more tonight
+Sunflower
+My eyes, want you more than a melody
+Let me inside
+Wish I could get to know you
+Sunflowers just died
+Keep it sweet in your memory
+I'm still tongue-tied
+Sunflower, sunflower
+Sunflower, sunflower
+Sunflower, sunflower
+Ayy, woo, ow
+Woo-woo, woo, woo-woo, woo
+Woo-woo, woo, woo-woo, woo
+Woo-woo, woo, woo-woo, woo
+Yeah
+Ooh-woo, ooh-ooh
+Doo, doo, doo, doo, doo, doo, doo, doo`
+    },
+    {
+        artist: "Dove Cameron",
+        song: "French Girls",
+        src: "audio/4.mp3",
+        lyrics: `Ooh, ooh, ooh-ooh, ooh, ooh, ooh-ooh
+Ooh, ooh, ooh-ooh, ooh, ooh (everything I do)
+Ooh, ooh, ooh-ooh, ooh, ooh, ooh-ooh
+Ooh, ooh, ooh-ooh, ooh, ooh (I do it for you)
+Everybody gonna wanna stand in line
+Under Paris pyramids at night
+With their pens and papers and prying eyes
+Never knowing that I sacrificed
+Looking up to the next go cracks
+Sistine Chapel and they grace so bad
+They could take a million photographs
+But a holy love, they'll never have
+I live for your touch, I live to inspire
+So carve me to pieces, do it in style
+Paint me like one of your French girls in emeralds and curls
+I give myself over to you
+I wanna be remembered, be yours forever
+Make me your whole world, your muse
+Ooh, ooh, ooh-ooh, ooh, ooh, ooh-ooh
+Ooh, ooh, ooh-ooh, ooh, ooh (everything I do)
+Ooh, ooh, ooh-ooh, ooh, ooh, ooh-ooh
+Ooh, ooh, ooh-ooh, ooh, ooh (I do it for you)
+Dirty pictures on the road
+Got you on that next flight home
+Arch my back like the Triomphe
+And cover me in liquid gold
+I live for your touch, I live to inspire
+So carve me to pieces, do it in style
+Paint me like one of your French girls, in emeralds and curls
+I give myself over to you
+I wanna be remembered, be yours forever
+Make me your whole world, your muse
+Ooh, ooh, ooh-ooh, ooh, ooh, ooh-ooh
+Ooh, ooh, ooh-ooh, ooh, ooh (everything I do)
+Ooh, ooh, ooh-ooh, ooh, ooh, ooh-ooh
+Ooh, ooh, ooh-ooh, ooh, ooh (I do it for you)
+Paint me like one of your French girls in emeralds and curls
+I give myself over to you
+I wanna be remembered, be yours forever
+Make me your whole world, your muse
+Ooh, ooh, ooh-ooh, ooh, ooh, ooh-ooh
+Ooh, ooh, ooh-ooh, ooh, ooh (everything I do)
+Ooh, ooh, ooh-ooh, ooh, ooh, ooh-ooh
+Ooh, ooh, ooh-ooh, ooh, ooh (I do it for you)`
+    },
+    {
+        artist: "Ghost",
+            song: "Life Eternal",
+            src: "audio/5.mp3",
+            lyrics: `Can you hear me say your name forever?
+Can you see me longing for you forever?
+Would you let me touch your soul forever?
+Can you feel me longing for you forever, forever?
+I know the light grows darker down below
+But in your eyes it's gone before you know
+This is the moment of just letting go
+She said, "If you had life eternal"
+Can you hear me say your name forever?
+Can you see me longing for you forever, forever?
+Would you let me touch your soul forever?
+Can you feel me longing for you forever, forever?
+We dance once more
+I feel your hands are cold
+Within your heart, a story to be told
+This is the moment of just letting go
+This is the moment of just letting go
+Can you hear me say your name forever?
+Can you see me longing for you forever, forever?
+Would you let me touch your soul forever?
+Can you feel me longing for you forever and ever?
+forever
+(Forever) forever, (forever) forever, (forever) forever
+(Forever) forever, (forever) forever, (forever) forever
+(Forever) forever, (forever) forever, (forever) forever
+forever
+(Forever) forever, (forever) forever, (forever) forever
+If you had life eternal?`
+    },
+    {
+        artist: "Stratovarius",
+            song: "Fantasy",
+            src: "audio/6.mp3",
+            lyrics: `Reach a star, travel far
+And find out who you really are
+Climb a hill, learn a skill
+All of your dreams you can fulfill
+Take a dream, make it real
+Don't let yourself give in to fear
+Come with me
+You can make it anywhere
+Sing along to this song
+And let it show that you're strong
+Don't pretend, help a friend
+They are with you until the end
+You will see, you can be
+Whatever you would like to be
+Come with me
+You can make it anywhere
+Fantasy
+I want to meet you there
+You will see
+Fantasy can become reality
+Come with me
+This is my fantasy
+I believe
+Fantasy can become reality
+Can you be my fantasy?
+Take your time, it's not a crime
+'Cause life is always in it's prime
+Show you care, if you dare
+Because true friendship's really rare
+Take a dream, make it real
+Don't let yourself give in to fear
+Come with me
+You can make it anywhere
+Fantasy
+I want to meet you there
+You will see
+Fantasy can become reality
+Come with me
+This is my fantasy
+I believe
+Fantasy can become reality
+Fantasy
+I want to meet you there
+You will see
+Fantasy can become reality
+Come with me
+This is my fantasy
+I believe
+Fantasy can become reality
+Can you be...
+(My fantasy)
+Oh, you will see
+(Can you be...)
+Become reality`
+    },
+    {
+        artist: "Arctic Monkeys",
+            song: "Baby I'm Yours",
+            src: "audio/7.mp3",
+            lyrics: `baby I'm yours
+Baby, I'm yours
+And I'll be yours until the stars fall from the sky,
+Yours until the rivers all run dry
+In other words, until I die
+
+Baby, I'm yours (baby, I'm yours)
+And I'll be yours (yours) until the sun no longer shines,
+Yours (yours) until the poets run out of rhyme
+In other words, until the end of time
+
+I'm gonna stay right here by your side,
+Do my best to keep you satisfied
+Nothin' in the world can drive me away
+Cause every day, you'll hear me say
+
+Baby, I'm yours (baby, I'm yours)
+And I'll be yours (yours) until two and two is three,
+Yours (yours) until the mountain crumbles to the sea
+In other words, until eternity
+
+Baby, I'm yours (baby, I'm yours)
+Baby, I'm yours
+Baby, I'm yours`
+    },
+        {
+        artist: "Bring Me The Horizon",
+            song: "Mother Tongue",
+            src: "audio/8.mp3",
+            lyrics: `I didn't see it coming
+But I never really had much faith
+In the universe's magic, oh no
+Till it pulled us to that time and place, and I'll never forget
+When the floodgates opened, we, we cried an ocean
+It still has me choking, it's hard to explain
+I know you know me, you don't have to show me
+I, I feel you're lonely, no need to explain
+So don't say you love me; fala: "Amo"
+Just let your heart speak up, and I'll know
+No amount of words could ever find a way to make sense of this
+So I wanna hear your mother tongue
+So don't say you love me; fala: "Amo"
+Just let your heart speak up, and I'll know
+No amount of words could ever find a way to make sense of this
+So I wanna hear your mother tongue
+And yeah, I could be punching
+But I always tend to fluctuate
+And I feel sick that I'm buzzing; oh, love, I'm in trouble
+I'm sorry, but you got me gushing all over the place, and I don't wanna get wet
+But I think we're chosen like our fates were woven
+And all of those bad choices were left turns on the way
+So don't say you love me; fala: "Amo"
+Just let your heart speak up, and I'll know
+No amount of words could ever find a way to make sense of this
+So I wanna hear your mother tongue
+So don't say you love me; fala: "Amo"
+Just let your heart speak up, and I'll know
+No amount of words could ever find a way to make sense of this
+So I wanna hear your mother tongue
+I think best way to explain, it's like
+Yeah, kinda like that, but little more
+Yeah, all makes sense right like, like, like
+So don't say you love me; fala: "Amo"
+Just let your heart speak up, and I'll know
+No amount of words could ever find a way to make sense of this
+So I wanna hear your mother tongue
+So don't say you love me; fala: "Amo"
+Just let your heart speak up, and I'll know
+No amount of words could ever find a way to make sense of this
+So I wanna hear your mother tongue
+So don't say you love me; fala: "Amo"
+Just let your heart speak up, and I'll know
+No amount of words could ever find a way to make sense of this
+So I wanna hear your mother tongue
+`
+    }
+    // {
+    //     artist: "Arctic Monkeys",
+    //         song: "Baby I'm Yours",
+    //         src: "audio/9.mp3",
+    //         lyrics: ``
+    // },
+    
+
+];
+
+let current = 0;
+let isPlaying = false;
+
+const audio = document.getElementById("audio");
+const songTitle = document.getElementById("songTitle");
+const lyricsText = document.getElementById("lyricsText");
+const playBtn = document.getElementById("playBtn");
+const progress = document.getElementById("progress");
+const progressContainer = document.getElementById("progressContainer");
+
+function loadSong(index) {
+    audio.src = playlist[index].src;
+
+    songTitle.innerHTML = `
+        <div>${playlist[index].artist}</div>
+        <div>${playlist[index].song}</div>
+    `;
+
+    lyricsText.textContent = playlist[index].lyrics || "";
+}
+
+function playPause() {
+    if (isPlaying) {
+        audio.pause();
+        playBtn.querySelector(".play").classList.remove("hidden");
+        playBtn.querySelector(".pause").classList.add("hidden");
+    } else {
+        audio.play();
+        playBtn.querySelector(".play").classList.add("hidden");
+        playBtn.querySelector(".pause").classList.remove("hidden");
+    }
+    isPlaying = !isPlaying;
+}
+
+function nextSong() {
+    current = (current + 1) % playlist.length;
+    loadSong(current);
+    audio.play();
+    isPlaying = true;
+    playBtn.querySelector(".play").classList.add("hidden");
+    playBtn.querySelector(".pause").classList.remove("hidden");
+}
+
+function prevSong() {
+    current = (current - 1 + playlist.length) % playlist.length;
+    loadSong(current);
+    audio.play();
+    isPlaying = true;
+    playBtn.querySelector(".play").classList.add("hidden");
+    playBtn.querySelector(".pause").classList.remove("hidden");
+}
+
+audio.addEventListener("timeupdate", () => {
+    const percent = (audio.currentTime / audio.duration) * 100;
+    progress.style.width = percent + "%";
+});
+
+progressContainer.addEventListener("click", e => {
+    const width = progressContainer.clientWidth;
+    audio.currentTime = (e.offsetX / width) * audio.duration;
+});
+
+/* ⭐ NUEVO: cuando termina una canción */
+audio.addEventListener("ended", nextSong);
+
+document.getElementById("prevBtn").onclick = prevSong;
+document.getElementById("nextBtn").onclick = nextSong;
+playBtn.onclick = playPause;
+
+loadSong(current);
+
+/* 💕 CORAZONES SVG */
+const bg = document.getElementById("bg");
+const colors = ["#fa25a8","#c74495","#d41c8d","#a6126d"];
+
+function createHeart() {
+    const heart = document.createElementNS("http://www.w3.org/2000/svg","svg");
+    heart.setAttribute("viewBox","0 0 16 16");
+    heart.classList.add("heart");
+
+    const size = 28 + Math.random() * 32;
+    heart.style.width = size + "px";
+    heart.style.height = size + "px";
+    heart.style.left = Math.random() * 100 + "%";
+    heart.style.animationDuration = 10 + Math.random() * 10 + "s";
+
+    const path = document.createElementNS("http://www.w3.org/2000/svg","path");
+    path.setAttribute("d","M1.24 8.24L8 15l6.76-6.76A4.9 4.9 0 0016 5.24V5.05A4.05 4.05 0 0011.95 1c-1.23 0-2.4.56-3.17 1.52L8 3.5l-.78-.98A4.04 4.04 0 004.05 1 4.05 4.05 0 000 5.05v.19c0 1.12.45 2.2 1.24 2.99Z");
+    path.setAttribute("fill", colors[Math.floor(Math.random() * colors.length)]);
+
+    heart.appendChild(path);
+    bg.appendChild(heart);
+
+    setTimeout(() => heart.remove(), 20000);
+}
+
+setInterval(createHeart, 180);
+</script>
+
+</body>
+</html>
